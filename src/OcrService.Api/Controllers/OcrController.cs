@@ -39,14 +39,31 @@ public class OcrController : ControllerBase
         using var memoryStream = new MemoryStream();
         await stream.CopyToAsync(memoryStream);
         var fileData = memoryStream.ToArray();
-        var jobId = _ocrService.StartOcrJob(fileData, file.FileName, file.ContentType, language);
+        var jobId = await _ocrService.StartOcrJob(fileData, file.FileName, file.ContentType, language);
+
+        // Get the job details to return more complete response
+        var job = await _ocrService.GetJobResult(jobId);
+        if (job != null)
+        {
+            return Ok(new
+            {
+                JobId = job.Id,
+                Status = job.Status.ToString(),
+                FileName = job.FileName,
+                ContentType = job.ContentType,
+                Language = job.Language,
+                CreatedAt = job.CreatedAt,
+                FileSize = file.Length
+            });
+        }
+
         return Ok(new { JobId = jobId });
     }
 
     [HttpGet("status/{id}")]
-    public IActionResult GetStatus(string id)
+    public async Task<IActionResult> GetStatus(string id)
     {
-        var result = _ocrService.GetJobResult(id);
+        var result = await _ocrService.GetJobResult(id);
         if (result == null)
         {
             return NotFound("Job not found.");

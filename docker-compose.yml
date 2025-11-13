@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  ocr-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=db;Database=ocrdb;Username=postgres;Password=password
+    depends_on:
+      - db
+    networks:
+      - ocr-network
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=ocrdb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ocr-network
+
+volumes:
+  postgres_data:
+
+networks:
+  ocr-network:
+    driver: bridge

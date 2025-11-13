@@ -1,15 +1,22 @@
 using OcrService.Domain.Entities;
 using OcrService.Domain.Interfaces;
-using System.Collections.Concurrent;
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OcrService.Infrastructure.Services;
 
 public class OcrProcessingService : IOcrProcessingService
 {
-    private readonly ConcurrentDictionary<string, OcrJob> _jobs = new();
+    private readonly IOcrJobRepository _repository;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public string StartOcrJob(byte[] fileData, string fileName, string contentType, string language = "eng")
+    public OcrProcessingService(IOcrJobRepository repository, IServiceScopeFactory scopeFactory)
+    {
+        _repository = repository;
+        _scopeFactory = scopeFactory;
+    }
+
+    public async Task<string> StartOcrJob(byte[] fileData, string fileName, string contentType, string language = "eng")
     {
         var job = new OcrJob
         {
@@ -18,23 +25,32 @@ public class OcrProcessingService : IOcrProcessingService
             Language = language
         };
 
-        _jobs[job.Id] = job;
+        await _repository.AddAsync(job);
 
-        // Start processing asynchronously
-        Task.Run(() => ProcessOcrAsync(job, fileData, contentType));
+        // Start processing asynchronously with independent scope
+        Task.Run(async () =>
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var scopedRepository = scope.ServiceProvider.GetRequiredService<IOcrJobRepository>();
+            await ProcessOcrAsync(scopedRepository, job, fileData, contentType);
+        });
 
         return job.Id;
     }
 
-    public OcrResult? GetJobResult(string id)
+    public async Task<OcrResult?> GetJobResult(string id)
     {
-        if (!_jobs.TryGetValue(id, out var job))
+        var job = await _repository.GetByIdAsync(id);
+        if (job == null)
             return null;
 
         return new OcrResult
         {
             Id = job.Id,
             Status = job.Status,
+            FileName = job.FileName,
+            ContentType = job.ContentType,
+            Language = job.Language,
             ExtractedText = job.ExtractedText,
             Confidence = job.Confidence,
             ErrorMessage = job.ErrorMessage,
@@ -43,11 +59,12 @@ public class OcrProcessingService : IOcrProcessingService
         };
     }
 
-    private async Task ProcessOcrAsync(OcrJob job, byte[] fileData, string contentType)
+    private async Task ProcessOcrAsync(IOcrJobRepository repository, OcrJob job, byte[] fileData, string contentType)
     {
         try
         {
             job.Status = JobStatus.Processing;
+            await repository.UpdateAsync(job);
 
             string extractedText;
             double confidence;
@@ -69,12 +86,14 @@ public class OcrProcessingService : IOcrProcessingService
             job.Confidence = confidence;
             job.Status = JobStatus.Completed;
             job.CompletedAt = DateTime.UtcNow;
+            await repository.UpdateAsync(job);
         }
         catch (Exception ex)
         {
             job.Status = JobStatus.Failed;
             job.ErrorMessage = ex.Message;
             job.CompletedAt = DateTime.UtcNow;
+            await repository.UpdateAsync(job);
         }
     }
 
