@@ -1,24 +1,24 @@
 # Use the official .NET 9 SDK image to build the app
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /src
+WORKDIR /
 
 # Copy the solution file and restore dependencies
 COPY ["OcrService.sln", "./"]
-COPY ["OcrService.Domain/OcrService.Domain.csproj", "OcrService.Domain/"]
-COPY ["OcrService.Application/OcrService.Application.csproj", "OcrService.Application/"]
-COPY ["OcrService.Infrastructure/OcrService.Infrastructure.csproj", "OcrService.Infrastructure/"]
-COPY ["OcrService.Api/OcrService.Api.csproj", "OcrService.Api/"]
+COPY ["src/OcrService.Domain/OcrService.Domain.csproj", "src/OcrService.Domain/"]
+COPY ["src/OcrService.Application/OcrService.Application.csproj", "src/OcrService.Application/"]
+COPY ["src/OcrService.Infrastructure/OcrService.Infrastructure.csproj", "src/OcrService.Infrastructure/"]
+COPY ["src/OcrService.Api/OcrService.Api.csproj", "src/OcrService.Api/"]
 RUN dotnet restore "OcrService.sln"
 
 # Copy the rest of the source code
-COPY . .
+COPY src/. src/
 
 # Build the app
-RUN dotnet build "OcrService.Api/OcrService.Api.csproj" -c Release -o /app/build
+RUN dotnet build "src/OcrService.Api/OcrService.Api.csproj" -c Release -o /app/build
 
 # Publish the app
 FROM build AS publish
-RUN dotnet publish "OcrService.Api/OcrService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "src/OcrService.Api/OcrService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Use the official .NET 9 runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
