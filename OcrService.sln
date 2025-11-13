@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcrService.Domain", "OcrService.Domain\OcrService.Domain.csproj", "{D7236D2B-5C02-4CE6-B80F-AF76609A351E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcrService.Domain", "src\OcrService.Domain\OcrService.Domain.csproj", "{D7236D2B-5C02-4CE6-B80F-AF76609A351E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcrService.Application", "OcrService.Application\OcrService.Application.csproj", "{6FF3A348-9ABF-4531-9544-A885E69F87BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcrService.Application", "src\OcrService.Application\OcrService.Application.csproj", "{6FF3A348-9ABF-4531-9544-A885E69F87BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcrService.Infrastructure", "OcrService.Infrastructure\OcrService.Infrastructure.csproj", "{3BB0BD4C-229F-40C8-808F-A51387869406}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcrService.Infrastructure", "src\OcrService.Infrastructure\OcrService.Infrastructure.csproj", "{3BB0BD4C-229F-40C8-808F-A51387869406}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcrService.Api", "OcrService.Api\OcrService.Api.csproj", "{6E0EC69E-981A-4FAA-9F5F-934A93CE5A43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcrService.Api", "src\OcrService.Api\OcrService.Api.csproj", "{6E0EC69E-981A-4FAA-9F5F-934A93CE5A43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
