@@ -1,10 +1,10 @@
 # OCR Service
 
-A .NET 9 web API service for optical character recognition (OCR) using Tesseract.
+A .NET 8 web API service for optical character recognition (OCR) using Tesseract.
 
 ## Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) (for local development)
   - On Ubuntu/Debian: `sudo apt-get install tesseract-ocr tesseract-ocr-eng tesseract-ocr-spa`
   - On Windows: Download from [UB-Mannheim/tesseract](https://github.com/UB-Mannheim/tesseract/wiki)

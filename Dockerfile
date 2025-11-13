@@ -1,5 +1,5 @@
-# Use the official .NET 9 SDK image to build the app
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+# Use the official .NET 8 SDK image to build the app
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /
 
 # Copy the solution file and restore dependencies
@@ -20,8 +20,8 @@ RUN dotnet build "src/OcrService.Api/OcrService.Api.csproj" -c Release -o /app/b
 FROM build AS publish
 RUN dotnet publish "src/OcrService.Api/OcrService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Use the official .NET 9 runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+# Use the official .NET 8 runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
 # Install system dependencies for Tesseract
